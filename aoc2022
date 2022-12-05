@@ -1,0 +1,59 @@
+def loadData():
+    f = open("input5.txt", 'r')
+    lines=f.readlines()
+    crates = []
+    instructions = []
+    for x in lines:
+        crate = lines[0]
+        if(len(x) == len(crate)):
+            x = x.replace("   ", " 0 " )
+            x = x.replace("[","")
+            x = x.replace("]","")
+            crates.append(x.strip("\n").split())
+        elif(len(x) != 1):
+            x = x.replace("move","")
+            x = x.replace("from","")
+            x = x.replace("to","")
+            x = x.strip("\n").strip()
+            instructions.append(x.split())
+    crates.pop()
+    return crates,instructions
+
+def processData(crates):
+    crates = list(map(list, zip(*crates)))
+    for x in crates:
+        x= x.reverse()
+    for x in crates:
+        while '0' in x:
+            x.remove('0')
+    return crates
+
+def performInstructions(machine,crates,instructions):
+    if machine == "multiple":
+        for i in instructions:
+            popped = []
+            for a in range(int(i[0])):
+                popped.append(crates[int(i[1])-1].pop())
+            for p in reversed(popped):
+                crates[int(i[2])-1].append(p)
+    else:
+        for i in instructions:
+            popped = []
+            for a in range(int(i[0])):
+                crates[int(i[2])-1].append(crates[int(i[1])-1][-1])
+                crates[int(i[1])-1].pop()
+    return crates
+
+##Part 1
+crates,instructions = loadData()
+crates = processData(crates)
+performInstructions("one",crates,instructions)
+for x in crates:
+    print(x[-1])
+
+##Part 2
+crates,instructions = loadData()
+crates = processData(crates)
+crates = performInstructions("multiple",crates,instructions)
+for x in crates:
+    print(x[-1])
